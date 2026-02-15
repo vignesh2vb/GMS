@@ -1,0 +1,9 @@
+[project]
+name = "gms"
+version = "0.1.0"
+description = "TPGIT Grievance Redressal Portal"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+app = "backend.app:app"
