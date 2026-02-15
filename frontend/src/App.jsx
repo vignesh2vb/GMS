@@ -20,17 +20,17 @@ function App() {
 
           <Route path="/admin" element={
             user && user.role === 'admin' ?
-              <AdminDashboard /> : <Navigate to="/login" />
+              <AdminDashboard user={user} setUser={setUser} /> : <Navigate to="/login" />
           } />
 
           <Route path="/student" element={
             user && user.role === 'student' ?
-              <StudentDashboard user={user} /> : <Navigate to="/login" />
+              <StudentDashboard user={user} setUser={setUser} /> : <Navigate to="/login" />
           } />
 
           <Route path="/staff" element={
-            user && ['faculty', 'hod', 'warden', 'principal'].includes(user.role) ?
-              <StaffDashboard user={user} /> : <Navigate to="/login" />
+            user && ['faculty', 'hod', 'warden', 'principal', 'exam_cell', 'office_staff'].includes(user.role) ?
+              <StaffDashboard user={user} setUser={setUser} /> : <Navigate to="/login" />
           } />
         </Routes>
       </div>

@@ -79,5 +79,6 @@ class Grievance(db.Model):
             'created_at': self.created_at.isoformat(),
             'escalation_level': self.escalation_level,
             'last_escalated_at': self.last_escalated_at.isoformat() if self.last_escalated_at else None,
-            'user_name': "Anonymous" if self.is_anonymous else (self.user.name if self.user else "Unknown")
+            'user_name': "Anonymous" if self.is_anonymous else (self.user.name if self.user else "Unknown"),
+            'user_department': self.user.department if self.user and not self.is_anonymous else None
         }

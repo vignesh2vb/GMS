@@ -120,8 +120,8 @@ const UserRegistrationForm = ({ onSuccess, defaultRole = 'student', allowedRoles
                     type="button"
                     onClick={() => handleTypeChange('staff')}
                     className={`flex-1 py-2 rounded text-sm font-semibold transition-all ${userType === 'staff' ? 'bg-white text-blue-900 shadow-sm border border-gray-200' : 'text-gray-500 hover:text-gray-700'}`}
-                    disabled={!allowedRoles.some(r => ['faculty', 'hod', 'warden', 'principal'].includes(r))}
-                    style={{ opacity: allowedRoles.some(r => ['faculty', 'hod', 'warden', 'principal'].includes(r)) ? 1 : 0.5 }}
+                    disabled={!allowedRoles.some(r => ['faculty', 'hod', 'warden', 'principal', 'exam_cell', 'office_staff'].includes(r))}
+                    style={{ opacity: allowedRoles.some(r => ['faculty', 'hod', 'warden', 'principal', 'exam_cell', 'office_staff'].includes(r)) ? 1 : 0.5 }}
                 >
                     STAFF
                 </button>

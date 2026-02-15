@@ -15,7 +15,7 @@ const Register = () => {
         year: '',
         hostel_name: ''
     });
-
+    const [residencyChoice, setResidencyChoice] = useState('day'); // 'day' | 'hostel'
     const [error, setError] = useState('');
 
     const handleChange = (e) => {
@@ -27,7 +27,7 @@ const Register = () => {
         setError('');
 
         try {
-            const response = await fetch('http://localhost:5000/api/register', {
+            const response = await fetch('http://127.0.0.1:5000/api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -61,7 +61,9 @@ const Register = () => {
                             <option value="faculty">Faculty</option>
                             <option value="hod">HOD</option>
                             <option value="principal">Principal</option>
-                            <option value="hostel warden">Hostel Warden</option>
+                            <option value="warden">Hostel Warden</option>
+                            <option value="exam_cell">Exam Cell Officer</option>
+                            <option value="office_staff">Office Staff</option>
                         </select>
                     </div>
 
@@ -118,8 +120,8 @@ const Register = () => {
                                     <input
                                         type="radio"
                                         name="residency"
-                                        checked={!formData.hostel_name && formData.role === 'student'} // Logic check - if day scholar
-                                        onChange={() => setFormData({ ...formData, hostel_name: '' })}
+                                        checked={residencyChoice === 'day' && !formData.hostel_name}
+                                        onChange={() => { setResidencyChoice('day'); setFormData({ ...formData, hostel_name: '' }); }}
                                     />
                                     Day Scholar
                                 </label>
@@ -127,22 +129,16 @@ const Register = () => {
                                     <input
                                         type="radio"
                                         name="residency"
-                                        checked={formData.hostel_name || formData.hostel_name === ''} // Just to toggle UI, actual logic handled by select
-                                        onChange={() => { }} // Controlled by UI state below
+                                        checked={residencyChoice === 'hostel' || !!formData.hostel_name}
+                                        onChange={() => setResidencyChoice('hostel')}
                                     />
                                     Hosteller
                                 </label>
                             </div>
 
-                            {/* Hosteller Logic - Simplified: Show Hostel Dropdown always if 'Hosteller' is intended, 
-                                 but here we can just show the dropdown and if they select a hostel, they are a hosteller. 
-                                 Let's make it explicit based on the request "click day scholar / hosteller".
-                                 We'll use a local state or just check if they want to select a hostel.
-                             */}
-
                             <div className="mt-2">
                                 <p className="text-sm text-gray-500 mb-1">If Hosteller, select hostel:</p>
-                                <select name="hostel_name" value={formData.hostel_name} onChange={handleChange} className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                                <select name="hostel_name" value={formData.hostel_name} onChange={(e) => { handleChange(e); if (e.target.value) setResidencyChoice('hostel'); }} className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
                                     <option value="">Not a Hosteller / Select Hostel</option>
                                     {formData.gender === 'Male' && (
                                         <>
@@ -163,7 +159,7 @@ const Register = () => {
                         </>
                     )}
 
-                    {formData.role === 'hostel warden' && (
+                    {formData.role === 'warden' && (
                         <div>
                             <label className="block text-gray-700 mb-1">Hostel Name</label>
                             <select name="hostel_name" value={formData.hostel_name} onChange={handleChange} className="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
@@ -181,8 +177,10 @@ const Register = () => {
                     <button type="submit" className="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition duration-300">Register</button>
                 </form>
 
-                <p className="mt-4 text-center text-gray-600">
-                    Already registered? <Link to="/login" className="text-blue-600 hover:underline">Login here</Link>
+                <p className="mt-4 text-center text-gray-600 text-sm">
+                    Already registered? <Link to="/login" className="text-blue-600 hover:underline font-medium">Login here</Link>
+                    <span className="mx-2">|</span>
+                    <Link to="/" className="text-blue-600 hover:underline font-medium">Back to Home</Link>
                 </p>
             </div>
         </div>

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import UserRegistrationForm from '../components/UserRegistrationForm';
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ user, setUser }) => {
+    const navigate = useNavigate();
     const [view, setView] = useState('add'); // 'add' or 'list'
     const [userType, setUserType] = useState('student');
     const [users, setUsers] = useState([]);
@@ -165,7 +167,7 @@ const AdminDashboard = () => {
                         User Directory
                     </button>
                     <button
-                        onClick={() => window.location.href = '/'}
+                        onClick={() => { setUser?.(null); navigate('/'); }}
                         className="px-4 py-2 rounded font-medium uppercase text-sm text-red-500 hover:bg-red-50 transition-colors"
                     >
                         Logout
@@ -204,7 +206,7 @@ const AdminDashboard = () => {
                         });
                         setTimeout(() => setMessage(''), 3000);
                     }}
-                    allowedRoles={['student', 'faculty', 'hod', 'warden', 'principal']}
+                    allowedRoles={['student', 'faculty', 'hod', 'warden', 'principal', 'exam_cell', 'office_staff']}
                 />
             )}
 
@@ -215,7 +217,7 @@ const AdminDashboard = () => {
                         <table className="w-full text-left border-collapse">
                             <thead>
                                 <tr className="bg-gray-50 border-b border-gray-200 text-gray-600 text-xs uppercase tracking-wider">
-                                    <th className="p-3 font-bold">ID</th>
+                                    <th className="p-3 font-bold">Reg No</th>
                                     <th className="p-3 font-bold">Name</th>
                                     <th className="p-3 font-bold">Role</th>
                                     <th className="p-3 font-bold">Details</th>
@@ -256,7 +258,7 @@ const AdminDashboard = () => {
                                             {u.role === 'student' ? (
                                                 <span>DOB: {u.dob}</span>
                                             ) : (
-                                                <span>PWD: {u.password}</span>
+                                                <span>PWD: {u.password ? '••••••••' : '—'}</span>
                                             )}
                                         </td>
                                     </tr>

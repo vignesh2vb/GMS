@@ -6,10 +6,14 @@ from cryptography.fernet import Fernet
 import os
 import time
 from werkzeug.utils import secure_filename
+from sqlalchemy.exc import IntegrityError
 
 app = Flask(__name__)
 # Base directory of the application
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# Valid Roles
+VALID_ROLES = ['student', 'faculty', 'hod', 'principal', 'warden', 'exam_cell', 'office_staff']
 
 # Database Configuration
 
@@ -87,7 +91,9 @@ def login():
         if user.password != password:
             print(f"Failed: Password mismatch. Input: '{password}', DB: '{user.password}'")
             return jsonify({'error': 'Invalid password'}), 401
-    else: # Staff
+            print(f"Failed: Password mismatch. Input: '{password}', DB: '{user.password}'")
+            return jsonify({'error': 'Invalid password'}), 401
+    else: # Staff (faculty, hod, warden, principal, exam_cell, office_staff)
         if user.role != role and user.role != 'admin':
              if user.role != role:
                  return jsonify({'error': f'You are registered as a {user.role}, but tried to login as {role}. Please select correct role.'}), 400
@@ -160,6 +166,9 @@ def add_user():
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User added successfully', 'user': new_user.to_dict()}), 201
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({'error': 'User with this Register Number or Email already exists.'}), 400
     except Exception as e:
         print(f"Error adding user: {e}")
         return jsonify({'error': str(e)}), 500
@@ -276,13 +285,11 @@ def check_and_escalate_grievances():
                 g.escalation_level = 'HOD'
                 g.last_escalated_at = now
                 print(f"Escalated Grievance {g.id} to HOD")
-                
             # 2. HOD -> Principal (after 5 days at HOD level)
             elif g.escalation_level == 'HOD' and time_at_level > timedelta(days=5):
                 g.escalation_level = 'Principal'
                 g.last_escalated_at = now
-                 # For Warden flow, it technically goes Warden -> Principal directly in many colleges, 
-                 # or Warden -> Chief Warden -> Principal. 
+                 # For Warden flow, it technically goes Warden -> Principal directly
                  # Using the same HOD->Principal flow for simplicity as requested, 
                  # interpreting "HOD" as the next level authority.
                 print(f"Escalated Grievance {g.id} to Principal")
@@ -345,6 +352,20 @@ def get_assigned_grievances():
             (Grievance.target_role == 'warden') |
             (Grievance.category == 'hostel') # Wardens see all hostel complaints usually
         )
+    elif user.role == 'exam_cell':
+         # Exam Cell sees Examination complaints
+         query = Grievance.query.filter(
+            (Grievance.target_staff_id == user_id) | 
+            (Grievance.target_role == 'exam_cell') |
+            (Grievance.category == 'examination')
+        )
+    elif user.role == 'office_staff':
+         # Office Staff sees Administrative complaints
+         query = Grievance.query.filter(
+            (Grievance.target_staff_id == user_id) | 
+            (Grievance.target_role == 'office_staff') |
+            (Grievance.category == 'administrative')
+        )
          
     grievances = query.all()
     
@@ -398,7 +419,7 @@ def resolve_grievance(id):
 
 @app.route('/api/users/staff', methods=['GET'])
 def get_staff():
-    staff = User.query.filter(User.role.in_(['faculty', 'hod', 'warden', 'principal'])).all()
+    staff = User.query.filter(User.role.in_(['faculty', 'hod', 'warden', 'principal', 'exam_cell', 'office_staff'])).all()
     return jsonify([s.to_dict() for s in staff])
 
 if __name__ == '__main__':

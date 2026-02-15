@@ -1,30 +1,29 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-// Images skipped due to generation error
-
 
 const Landing = () => {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
             {/* Navbar */}
-            <nav className="bg-white shadow-md p-4 sticky top-0 z-50">
-                <div className="container mx-auto flex justify-between items-center">
-                    <div className="text-2xl font-bold text-blue-700">GMS</div>
-                    <div className="space-x-4">
+            <nav className="bg-white shadow-md p-4 sticky top-0 z-50 border-b border-gray-100">
+                <div className="container mx-auto flex justify-between items-center max-w-6xl">
+                    <div className="text-xl md:text-2xl font-bold text-blue-900 tracking-tight">TPGIT Grievance</div>
+                    <div className="flex items-center gap-3">
                         <Link to="/" className="text-gray-600 hover:text-blue-600 font-medium">Home</Link>
-                        <Link to="/register" className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">Register</Link>
-                        <Link to="/login" className="px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition">Login</Link>
+                        <Link to="/register" className="text-gray-600 hover:text-blue-600 font-medium">Register</Link>
+                        <Link to="/login" className="px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800 transition font-semibold">Login</Link>
                     </div>
                 </div>
             </nav>
 
             {/* Hero Section */}
-            <header className="bg-blue-700 text-white py-20 text-center px-4">
-                <h1 className="text-4xl md:text-6xl font-extrabold mb-4">Grievance Management System</h1>
-                <p className="text-xl md:text-2xl mb-8 max-w-2xl mx-auto opacity-90">A streamlined platform to voice your concerns and get them resolved efficiently.</p>
-                <div className="flex justify-center gap-4">
-                    <Link to="/register" className="px-8 py-3 bg-white text-blue-700 font-bold rounded-full shadow-lg hover:bg-gray-100 transition transform hover:scale-105">Get Started</Link>
-                    <Link to="/login" className="px-8 py-3 border-2 border-white text-white font-bold rounded-full hover:bg-white/10 transition">Login</Link>
+            <header className="bg-gradient-to-br from-blue-900 to-blue-700 text-white py-20 text-center px-4">
+                <h1 className="text-3xl md:text-5xl font-extrabold mb-4 tracking-tight">Thanthai Periyar Government Institute of Technology</h1>
+                <p className="text-lg md:text-xl mb-2 opacity-95">Grievance Redressal Portal</p>
+                <p className="text-base md:text-lg mb-8 max-w-2xl mx-auto opacity-90">A streamlined platform to voice your concerns and get them resolved efficiently.</p>
+                <div className="flex justify-center gap-4 flex-wrap">
+                    <Link to="/login" className="px-8 py-3 bg-white text-blue-900 font-bold rounded-lg hover:bg-gray-100 transition shadow-md">Login</Link>
+                    <Link to="/register" className="px-8 py-3 border-2 border-white text-white font-bold rounded-lg hover:bg-white/10 transition">Register</Link>
                 </div>
             </header>
 
@@ -71,8 +70,8 @@ const Landing = () => {
             </section>
 
             {/* Footer */}
-            <footer className="bg-gray-800 text-white py-8 text-center">
-                <p>&copy; 2026 Grievance Management System. All rights reserved.</p>
+            <footer className="bg-gray-800 text-white py-8 text-center mt-auto">
+                <p className="text-sm">&copy; {new Date().getFullYear()} TPGIT Grievance Redressal Portal. All rights reserved.</p>
             </footer>
         </div>
     );

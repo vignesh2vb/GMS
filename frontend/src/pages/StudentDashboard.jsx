@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
-const StudentDashboard = ({ user }) => {
+const StudentDashboard = ({ user, setUser }) => {
+    const navigate = useNavigate();
     const [grievance, setGrievance] = useState({
         user_id: user?.id,
         category: 'academic',
@@ -13,6 +15,7 @@ const StudentDashboard = ({ user }) => {
     const [uploading, setUploading] = useState(false);
     const [status, setStatus] = useState([]);
     const [staffList, setStaffList] = useState([]);
+    const [submitError, setSubmitError] = useState('');
 
     // ... (inside component)
 
@@ -39,12 +42,13 @@ const StudentDashboard = ({ user }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setSubmitError('');
         try {
             await axios.post('http://127.0.0.1:5000/api/grievances/submit', { ...grievance, user_id: user.id });
             setGrievance({ ...grievance, description: '', target_staff_id: '', attachment_url: '' }); // Clear URL
             fetchGrievances();
         } catch (err) {
-            console.error(err);
+            setSubmitError(err.response?.data?.error || 'Failed to submit grievance. Please try again.');
         }
     };
 
@@ -84,7 +88,7 @@ const StudentDashboard = ({ user }) => {
                     <span className="font-semibold text-gray-600">{user?.name}</span>
                     <span className="text-gray-400">|</span>
                     <span className="font-mono text-gray-500">{user?.regno}</span>
-                    <button onClick={() => window.location.href = '/'} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</button>
+                    <button onClick={() => { setUser?.(null); navigate('/'); }} className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">Logout</button>
                 </div>
             </header>
 
@@ -96,6 +100,9 @@ const StudentDashboard = ({ user }) => {
                     </h2>
 
                     <form onSubmit={handleSubmit} className="space-y-4">
+                        {submitError && (
+                            <div className="bg-red-50 text-red-700 text-sm p-3 rounded border border-red-200">{submitError}</div>
+                        )}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-xs uppercase font-bold text-gray-500 mb-1">Category</label>
@@ -105,6 +112,7 @@ const StudentDashboard = ({ user }) => {
                                     onChange={(e) => setGrievance({ ...grievance, category: e.target.value })}
                                 >
                                     <option value="academic">Academic</option>
+                                    <option value="administrative">Administrative</option>
                                     <option value="examination">Examination</option>
                                     <option value="hostel">Hostel</option>
                                     <option value="indoor">Indoor</option>
@@ -137,8 +145,40 @@ const StudentDashboard = ({ user }) => {
                                         onChange={(e) => setGrievance({ ...grievance, target_staff_id: e.target.value })}
                                     >
                                         <option value="">-- General Hostel Grievance --</option>
-                                        {staffList.filter(s => s.role === 'warden').map(s => (
-                                            <option key={s.id} value={s.id}>{s.name} ({s.hostel_name || 'Warden'})</option>
+                                        {staffList.filter(s => s.role === 'warden' || s.role === 'principal').map(s => (
+                                            <option key={s.id} value={s.id}>{s.name} ({s.hostel_name || s.role})</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {grievance.category === 'administrative' && (
+                                <div>
+                                    <label className="block text-xs uppercase font-bold text-gray-500 mb-1">Select Office Staff (Optional)</label>
+                                    <select
+                                        className="input-field border-blue-300 ring-1 ring-blue-100"
+                                        value={grievance.target_staff_id}
+                                        onChange={(e) => setGrievance({ ...grievance, target_staff_id: e.target.value })}
+                                    >
+                                        <option value="">-- General Administrative Grievance --</option>
+                                        {staffList.filter(s => ['office_staff', 'principal'].includes(s.role)).map(s => (
+                                            <option key={s.id} value={s.id}>{s.name} ({s.role})</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {grievance.category === 'examination' && (
+                                <div>
+                                    <label className="block text-xs uppercase font-bold text-gray-500 mb-1">Select Exam Cell Officer (Optional)</label>
+                                    <select
+                                        className="input-field border-blue-300 ring-1 ring-blue-100"
+                                        value={grievance.target_staff_id}
+                                        onChange={(e) => setGrievance({ ...grievance, target_staff_id: e.target.value })}
+                                    >
+                                        <option value="">-- General Examination Grievance --</option>
+                                        {staffList.filter(s => s.role === 'exam_cell').map(s => (
+                                            <option key={s.id} value={s.id}>{s.name} ({s.role})</option>
                                         ))}
                                     </select>
                                 </div>
@@ -202,7 +242,7 @@ const StudentDashboard = ({ user }) => {
                                 <div key={g.id} className="bg-gray-50 border border-gray-200 p-5 rounded-lg hover:shadow-md transition-shadow">
                                     <div className="flex justify-between items-start mb-3">
                                         <div className="flex flex-col">
-                                            <span className={`w-fit px-2 py-0.5 rounded textxs font-bold uppercase tracking-wider mb-1 ${g.status === 'Resolved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                                            <span className={`w-fit px-2 py-0.5 rounded text-xs font-bold uppercase tracking-wider mb-1 ${g.status === 'Resolved' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
                                                 }`}>
                                                 {g.status}
                                             </span>

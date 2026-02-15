@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import logo from './TPGIT_Logo.jpg';
 
 const Login = ({ setUser }) => {
@@ -54,7 +54,7 @@ const Login = ({ setUser }) => {
                                 setPassword('');
                                 setError('');
                             }}
-                            className={`flex-1 py-1.5 rounded text-sm font-medium transition-all duration-200 capitalize ${(r === 'staff' && ['faculty', 'hod', 'warden', 'principal'].includes(role)) || role === r
+                            className={`flex-1 py-1.5 rounded text-sm font-medium transition-all duration-200 capitalize ${(r === 'staff' && ['faculty', 'hod', 'warden', 'principal', 'exam_cell', 'office_staff'].includes(role)) || role === r
                                 ? 'bg-white text-blue-900 shadow-sm border border-gray-200 font-bold'
                                 : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
                                 }`}
@@ -64,7 +64,7 @@ const Login = ({ setUser }) => {
                     ))}
                 </div>
 
-                {['faculty', 'hod', 'warden', 'principal'].includes(role) && (
+                {['faculty', 'hod', 'warden', 'principal', 'exam_cell', 'office_staff'].includes(role) && (
                     <div className="mb-4 animate-fade-in">
                         <label className="text-xs uppercase font-bold text-gray-500 mb-2 block text-center">Select Designation</label>
                         <div className="grid grid-cols-2 gap-2">
@@ -72,7 +72,9 @@ const Login = ({ setUser }) => {
                                 { id: 'faculty', label: 'Faculty' },
                                 { id: 'hod', label: 'HOD' },
                                 { id: 'warden', label: 'Warden' },
-                                { id: 'principal', label: 'Principal' }
+                                { id: 'principal', label: 'Principal' },
+                                { id: 'exam_cell', label: 'Exam Cell' },
+                                { id: 'office_staff', label: 'Office Staff' }
                             ].map((type) => (
                                 <button
                                     key={type.id}
@@ -134,9 +136,11 @@ const Login = ({ setUser }) => {
                 </form>
 
                 <div className="mt-6 text-xs text-center text-gray-400 border-t border-gray-100 pt-4">
-                    &copy; {new Date().getFullYear()} TPGIT Vellore. All Rights Reserved.
+                    <p>Don&apos;t have an account? <Link to="/register" className="text-blue-600 hover:underline font-medium">Register</Link></p>
+                    <p className="mt-2">&copy; {new Date().getFullYear()} TPGIT Vellore. All Rights Reserved.</p>
                     <div className="mt-2">
                         <button
+                            type="button"
                             onClick={() => {
                                 setRole('admin');
                                 setIdentifier('aasif');
